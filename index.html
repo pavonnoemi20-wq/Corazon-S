@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corazón con Chachachá</title>
+    <title>Corazón para Ti</title>
     <style>
         body {
             margin: 0;
@@ -13,20 +13,23 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            cursor: pointer; /* Cambia el cursor para indicar que puedes hacer clic */
+            touch-action: none; /* Mejora el toque en celulares */
         }
         #instruccion {
             position: fixed;
             top: 20px;
-            color: rgba(255, 0, 0, 0.5);
-            font-family: Arial, sans-serif;
+            color: rgba(255, 0, 0, 0.6);
+            font-family: sans-serif;
             font-size: 14px;
+            text-align: center;
+            width: 100%;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
 
-<div id="instruccion">Haz clic para activar la música 🎵</div>
+<div id="instruccion">Toca la pantalla para la magia 🎵</div>
 <canvas id="heartCanvas"></canvas>
 
 <audio id="miMusica" src="chachacha.mp3.mpeg" loop></audio>
@@ -37,17 +40,26 @@
     const audio = document.getElementById('miMusica');
     const instruccion = document.getElementById('instruccion');
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
 
     const particles = [];
-    const particleCount = 100; 
-    const text = "I love you"; // <--- Aquí puedes cambiarlo por un nombre
+    const particleCount = 80; 
+    const text = "I love you"; 
 
-    // Activar música al hacer clic
     window.addEventListener('click', () => {
         audio.play();
-        instruccion.style.display = 'none'; // Oculta el texto al sonar
+        instruccion.style.display = 'none';
+    }, { once: true });
+
+    // También para pantallas táctiles
+    window.addEventListener('touchstart', () => {
+        audio.play();
+        instruccion.style.display = 'none';
     }, { once: true });
 
     function getHeartPoint(t) {
@@ -60,18 +72,15 @@
     class Particle {
         constructor(t) {
             this.t = t;
-            this.baseSize = 14;
-            this.size = this.baseSize;
+            this.baseSize = 13;
         }
         update() {
             this.size = this.baseSize + Math.sin(Date.now() * 0.005) * 2;
         }
         draw() {
             const pos = getHeartPoint(this.t);
-            
-            // Calculamos una escala basada en el ancho de la pantalla
-            // Si la pantalla es pequeña (celular), el corazón se hace más chico automáticamente
-            const scale = Math.min(canvas.width / 50, canvas.height / 50);
+            // ESCALA DINÁMICA: Se ajusta al tamaño de la pantalla
+            const scale = Math.min(canvas.width / 45, canvas.height / 45);
             
             const x = pos.x * scale + canvas.width / 2;
             const y = pos.y * scale + canvas.height / 2;
@@ -80,8 +89,10 @@
             ctx.font = `bold ${this.size}px Arial`;
             ctx.shadowBlur = 8;
             ctx.shadowColor = "red";
+            ctx.textAlign = "center";
             ctx.fillText(text, x, y);
         }
+    }
 
     function init() {
         for (let i = 0; i < particleCount; i++) {
@@ -99,11 +110,6 @@
         });
         requestAnimationFrame(animate);
     }
-
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
 
     init();
     animate();
