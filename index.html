@@ -68,15 +68,20 @@
         }
         draw() {
             const pos = getHeartPoint(this.t);
-            const x = pos.x * 15 + canvas.width / 2;
-            const y = pos.y * 15 + canvas.height / 2;
+            
+            // Calculamos una escala basada en el ancho de la pantalla
+            // Si la pantalla es pequeña (celular), el corazón se hace más chico automáticamente
+            const scale = Math.min(canvas.width / 50, canvas.height / 50);
+            
+            const x = pos.x * scale + canvas.width / 2;
+            const y = pos.y * scale + canvas.height / 2;
+
             ctx.fillStyle = "#FF0000";
             ctx.font = `bold ${this.size}px Arial`;
             ctx.shadowBlur = 8;
             ctx.shadowColor = "red";
             ctx.fillText(text, x, y);
         }
-    }
 
     function init() {
         for (let i = 0; i < particleCount; i++) {
