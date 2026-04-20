@@ -13,17 +13,18 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            touch-action: none; /* Mejora el toque en celulares */
+            touch-action: none; /* Evita zoom accidental en móviles */
         }
         #instruccion {
             position: fixed;
-            top: 20px;
-            color: rgba(255, 0, 0, 0.6);
-            font-family: sans-serif;
-            font-size: 14px;
+            top: 15%;
+            color: rgba(255, 0, 0, 0.7);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
             text-align: center;
             width: 100%;
             z-index: 10;
+            letter-spacing: 1px;
         }
     </style>
 </head>
@@ -32,7 +33,7 @@
 <div id="instruccion">Toca la pantalla para la magia 🎵</div>
 <canvas id="heartCanvas"></canvas>
 
-<audio id="miMusica" src="chachacha.mp3.mpeg" loop></audio>
+<audio id="miMusica" src="chachacha.mp3.mpeg" preload="auto" loop></audio>
 
 <script>
     const canvas = document.getElementById('heartCanvas');
@@ -48,19 +49,19 @@
     resize();
 
     const particles = [];
-    const particleCount = 80; 
-    const text = "I love you"; 
+    const particleCount = 85; 
+    const text = "I love you"; // <--- Puedes cambiarlo aquí si quieres
 
-    window.addEventListener('click', () => {
-        audio.play();
-        instruccion.style.display = 'none';
-    }, { once: true });
+    // Función de reproducción inmediata
+    function iniciarTodo() {
+        audio.play().catch(e => console.log("Esperando interacción..."));
+        instruccion.style.opacity = '0';
+        setTimeout(() => instruccion.style.display = 'none', 500);
+    }
 
-    // También para pantallas táctiles
-    window.addEventListener('touchstart', () => {
-        audio.play();
-        instruccion.style.display = 'none';
-    }, { once: true });
+    // Eventos para PC y Móvil
+    window.addEventListener('click', iniciarTodo, { once: true });
+    window.addEventListener('touchstart', iniciarTodo, { once: true });
 
     function getHeartPoint(t) {
         return {
@@ -79,7 +80,8 @@
         }
         draw() {
             const pos = getHeartPoint(this.t);
-            // ESCALA DINÁMICA: Se ajusta al tamaño de la pantalla
+            
+            // ESCALA RESPONSIVA: Ajusta el tamaño del corazón según el ancho o alto
             const scale = Math.min(canvas.width / 45, canvas.height / 45);
             
             const x = pos.x * scale + canvas.width / 2;
@@ -87,7 +89,7 @@
 
             ctx.fillStyle = "#FF0000";
             ctx.font = `bold ${this.size}px Arial`;
-            ctx.shadowBlur = 8;
+            ctx.shadowBlur = 10;
             ctx.shadowColor = "red";
             ctx.textAlign = "center";
             ctx.fillText(text, x, y);
